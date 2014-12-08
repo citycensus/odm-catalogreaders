@@ -4,5 +4,8 @@ setup(
     name='odm-catalogs',
     description="Extraction of metadata from various data catalogs",
     license='mit',
-    packages=find_packages
+    packages=['odm', 'odm.catalogs', 'odm.catalogs.portals', 'odm.catalogs.utils'],
+    install_requires=[
+        'lxml',
+    ],
 )
