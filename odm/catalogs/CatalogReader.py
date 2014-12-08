@@ -18,7 +18,10 @@ class CatalogReader(object):
 
     def read_data(self):
         """Get the data as a list of python dicts. """
-        g = self.gather()
-        f = map(self.fetch, g)
-        i = map(self.import_data, f)
-        return i
+        gs = self.gather()
+        ds = []
+        for g in gs:
+            f = self.fetch(g)
+            i = self.import_data(f)
+            ds.append(i)
+        return ds
