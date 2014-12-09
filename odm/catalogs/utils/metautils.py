@@ -15,3 +15,30 @@ def isopen(licensetext):
         return 'Offen'
     else:
         return 'Unbekannt'
+
+
+def findLcGermanCharsAndReplace(germanstring):
+    germanchars = (u'ü', u'ä', u'ö', u'é', u'ß')
+    englishreplacements = ('ue', 'ae', 'oe', 'ee', 'ss')
+    for x in range(0, len(germanchars)):
+        if germanchars[x] in germanstring:
+            germanstring = germanstring.replace(germanchars[x], englishreplacements[x])
+    return germanstring
+
+
+# Useful for CKAN import
+def force_alphanumeric_short(title):
+    title = findLcGermanCharsAndReplace(title.lower())
+    retval = ''
+    for char in title:
+        if char == ' ':
+            retval += '-'
+        elif char.isalnum():
+            retval += char
+    return retval
+
+
+def category_to_group(groupname):
+        # maybe some other id
+#        return {'name': force_alphanumeric_short(groupname), 'id': force_alphanumeric_short(groupname)}
+        return {'name': force_alphanumeric_short(groupname)}
