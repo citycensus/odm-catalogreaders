@@ -166,7 +166,7 @@ class BwReader(CatalogReader):
         return {
             'name': 'bw_harvester',
             'title': u'opendata.service-bw.de',
-            'description': 'Harvester for Baden-Württembergs open data portal opendata.service-bw.de'
+            'description': u'Harvester for Baden-Württembergs open data portal opendata.service-bw.de'
         }
 
     def gather(self):
