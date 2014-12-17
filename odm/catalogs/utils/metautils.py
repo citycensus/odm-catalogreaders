@@ -7,15 +7,13 @@ allfiletypes.extend(fileformats)
 allfiletypes.extend(geoformats)
 allfiletypes = tuple(allfiletypes)
 
-
 def isopen(licensetext):
-    if any(licensetexttest in ("cc-by", "odc-by", "CC-BY 3.0", "dl-de-by-2.0", "dl-de/by-2-0", "CC-BY-SA 3.0", "other-open", "CC0-1.0", "cc-zero", "dl-de-zero-2.0", "Andere offene Lizenzen", "CC-BY-ND 3.0", "CC BY-NC-ND 3.0 DE", "CC BY 3.0 DE", "cc-nc", "dl-de-by-1.0", "dl-de-by 1.0", "dl-de-by-nc-1.0", "CC BY-NC-SA 3.0 DE") for licensetexttest in (licensetext.lower(), licensetext.upper())):
-        return 'Nicht offen'
-    elif licensetext.lower() in ("other-closed", u"andere eingeschränkte lizenzen"):
+    if any(licensetexttest in ("cc-by", "odc-by", "CC-BY 3.0", "dl-de-by-2.0", "dl-de/by-2-0", "CC-BY-SA 3.0", "other-open", "CC0-1.0", "cc-zero", "dl-de-zero-2.0", "Andere offene Lizenzen", "CC BY 3.0 DE", "dl-de-by-1.0", "dl-de-by 1.0", "gfdl", "odbl", "cc-by-sa") for licensetexttest in (licensetext.lower(), licensetext.upper())):
         return 'Offen'
+    elif licensetext.lower() in ("other-closed", u"andere eingeschränkte lizenzen", u"andere eingeschränkte lizenz", "cc-nc", "CC-BY-ND 3.0", "CC BY-NC-ND 3.0 DE", "dl-de-by-nc-1.0", "CC BY-NC-SA 3.0 DE"):
+        return 'Nicht offen'
     else:
         return 'Unbekannt'
-
 
 def findLcGermanCharsAndReplace(germanstring):
     germanchars = (u'ü', u'ä', u'ö', u'é', u'ß')
