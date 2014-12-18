@@ -34,9 +34,3 @@ def force_alphanumeric_short(title):
         elif char.isalnum():
             retval += char
     return retval
-
-
-def category_to_group(groupname):
-        # maybe some other id
-#        return {'name': force_alphanumeric_short(groupname), 'id': force_alphanumeric_short(groupname)}
-        return {'name': force_alphanumeric_short(groupname)}
