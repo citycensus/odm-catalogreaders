@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import urllib
+import json
 
 fileformats = ('CSV', 'XLS', 'XLSX', 'JSON', 'RDF', 'ZIP')
 geoformats = ('GEOJSON', 'GML', 'GPX', 'GJSON', 'TIFF', 'SHP', 'KML', 'KMZ', 'WMS', 'WFS', 'GML2', 'GML3', 'SHAPE', 'OVL', 'IKT', 'CRS', 'TCX', 'DBF', 'SHX')
@@ -47,6 +49,7 @@ def gerToEngKeys(d):
                'temporalextent': u'Zeitlicher Bezug',
                'licenseshort': u'Lizenz',
                'costs': u'Kosten',
+               'formats': u'Format',
                'publisher': u'Veröffentlichende Stelle'}
     mapping = {y: x for x, y in mapping.iteritems()}
     return {mapping.get(k, k): v for k, v in d.items()}
@@ -66,13 +69,13 @@ def govDataShortToODM(group):
         return [u'Geographie, Geologie und Geobasisdaten']
     elif group == 'infrastruktur' or group == 'structure':
         return [u'Infrastruktur, Bauen und Wohnen']
-    elif any (x == group for x in ('gesundheit', 'health')):
+    elif any(x == group for x in ('gesundheit', 'health')):
         return [u'Gesundheit']
     elif group == 'soziales' or group == 'sozial':
         return [u'Soziales']
     elif 'kultur' in group:
         return [u'Kultur, Freizeit, Sport, Tourismus']
-    elif any (x == group for x in ('umwelt_klima', 'umwelt', 'environment', 'biota', 'oceans')):
+    elif any(x == group for x in ('umwelt_klima', 'umwelt', 'environment', 'biota', 'oceans')):
         return [u'Umwelt und Klima']
     elif any(x == group for x in ('transport_verkehr', 'transport')):
         return [u'Transport und Verkehr']
@@ -111,7 +114,7 @@ def govDataLongToODM(group, checkAll=False):
     if u'Wahlen' in group:
         returnvalue.append(u'Politik und Wahlen')
         if not checkAll: return returnvalue
-    if any (x.lower() in group.lower() for x in [u'Gesetze und Justiz', u'Recht']):
+    if any(x.lower() in group.lower() for x in [u'Gesetze und Justiz', u'Recht']):
         returnvalue.append(u'Gesetze und Justiz')
         if not checkAll: return returnvalue
     if u'Wirtschaft und Arbeit' in group:
@@ -138,7 +141,7 @@ def govDataLongToODM(group, checkAll=False):
     if u'Verbraucherschutz' in group:
         returnvalue.append(u'Verbraucherschutz')
         if not checkAll: return returnvalue
-    #Moers only
+    # Moers only
     if u'Allgemein' in group:
         returnvalue.append(u'Sonstiges')
         if not checkAll: return returnvalue
@@ -148,8 +151,51 @@ def govDataLongToODM(group, checkAll=False):
     if u'Kultur und Bildung' in group:
         returnvalue.extend([u'Bildung und Wissenschaft', u'Kultur, Freizeit, Sport, Tourismus'])
         if not checkAll: return returnvalue
-    #end Moers only
+    # end Moers only
     if len(returnvalue) == 0:
         print 'Warning: could not return a category for ' + group
     return returnvalue
-    
+
+
+def long_license_to_short(licensetext):
+    # Put badly named things here
+    if licensetext == 'Creative Commons CCZero':
+        licensetext = 'CC0 1.0'
+    jsonurl = urllib.urlopen('http://licenses.opendefinition.org/licenses/groups/all.json')
+    licenses = json.loads(jsonurl.read())
+    for key in (licenses):
+        lic = licenses[key]
+        if licensetext.lower().strip() == lic['title'].lower():
+            return lic['id']
+    # Missing
+    if licensetext == 'Datenlizenz Deutschland Namensnennung 2.0':
+        return 'dl-de-by-2.0'
+    if licensetext == u'Nutzungsbestimmungen für die Bereitstellung von Geodaten des Bundes':
+        return 'GeoNutzV'
+    #Badly named that we can't correct to something that will be found in the list (ambiguous, in particular missing version numbers)
+    if licensetext == 'Creative Commons Attribution':
+        return 'cc-by'
+    if licensetext == 'Creative Commons Namensnennung (CC-BY)':
+        return 'cc-by'
+    if licensetext == 'GNU Free Documentation License':
+        return 'gfdl'
+    if licensetext == 'Open Data Commons Open Database License (ODbL)':
+        return 'odbl'
+    if licensetext in ('Creative Commons Attribution Weitergabe unter gleichen Bedingungen (CC-BY-SA)', 'Creative Commons Attribution Share-Alike'):
+        return 'cc-by-sa'
+    #Not open licenses, although this does not preclude reference in the file above
+    if licensetext in ('Creative Commons Nicht-Kommerziell (CC-NC)', 'Creative Commons Non-Commercial (Any)'):
+        return 'cc-nc'
+    if licensetext == 'Datenlizenz Deutschland Namensnennung - nicht kommerziell':
+        return 'dl-de-by-nc-1.0'
+    if licensetext == 'Datenlizenz Deutschland Namensnennung':
+        return 'dl-de-by-1.0'
+    print 'Could not shorten ' + findLcGermanCharsAndReplace(licensetext.lower()) + ' (lower cased, dspec. chars removed). This may be OK if there is no sensible short form.'
+    return licensetext
+
+
+def setofvaluesasarray(arrayvalue, keyvalue):
+    simplearray = []
+    for item in arrayvalue:
+        simplearray.append(item[keyvalue])
+    return simplearray
