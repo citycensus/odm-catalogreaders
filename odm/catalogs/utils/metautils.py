@@ -20,6 +20,14 @@ def isopen(licensetext):
         return 'Unbekannt'
 
 
+def isgeo(formats):
+    geo = False
+    for f in formats:
+        if f in geoformats:
+            geo = True
+    return geo
+
+
 def findLcGermanCharsAndReplace(germanstring):
     germanchars = (u'ü', u'ä', u'ö', u'é', u'ß')
     englishreplacements = ('ue', 'ae', 'oe', 'ee', 'ss')
@@ -50,7 +58,8 @@ def gerToEngKeys(d):
                'licenseshort': u'Lizenz',
                'costs': u'Kosten',
                'formats': u'Format',
-               'publisher': u'Veröffentlichende Stelle'}
+               'publisher': u'Veröffentlichende Stelle',
+               'url': u'URL PARENT'}
     mapping = {y: x for x, y in mapping.iteritems()}
     return {mapping.get(k, k): v for k, v in d.items()}
 
@@ -91,7 +100,7 @@ def govDataShortToODM(group):
         print 'Warning: could not return a category for ' + group
         return []
 
-    
+
 def govDataLongToODM(group, checkAll=False):
     # The name is a misnomer: this checks for a valid govdata category and does some mapping where not. We have one extra category: Sonstiges
     # This is designed to cope either with a single category or a string with all categories. Quotes are allowed.
