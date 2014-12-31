@@ -49,6 +49,12 @@ def force_alphanumeric_short(title):
     return retval
 
 
+def getShortCityName(settlementName):
+    long_name = settlementName.split(',')[0]
+    short_name = findLcGermanCharsAndReplace(long_name.replace(' ', '').replace('(', '').replace(')', '').lower())
+    return short_name
+
+
 def gerToEngKeys(d):
     mapping = {'city': u'Stadt',
                'source': u'Quelle',
