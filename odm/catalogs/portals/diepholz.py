@@ -288,5 +288,6 @@ class DiepholzReader(CatalogReader):
 
     def import_data(self, d):
         d = recordToDB(d)
+        d['originating_portal'] = portalname
         d['accepted'] = True
         return d

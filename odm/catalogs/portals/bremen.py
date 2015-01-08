@@ -61,6 +61,7 @@ class BremenReader(CatalogReader):
         d = import_package(d)
         d = metautils.gerToEngKeys(d)
         d = dict(d)
+        d['originating_portal'] = portalname
         d['accepted'] = True
         d['source'] = 'd'
         d['metadata_xml'] = None

@@ -64,6 +64,7 @@ class RostockReader(CatalogReader):
 
     def import_data(self, d):
         d = metautils.gerToEngKeys(d)
+        d['originating_portal'] = portalname
         d['accepted'] = True
         d['source'] = 'd'
         d['metadata_xml'] = None

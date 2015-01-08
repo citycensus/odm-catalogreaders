@@ -209,6 +209,7 @@ class BochumReader(CatalogReader):
 
     def import_data(self, record):
         # Expand categories
+        record['originating_portal'] = "bochum.de/opendata"
         record['metadata'] = record.copy()
         record['source'] = 'd'
         record['description'] = None

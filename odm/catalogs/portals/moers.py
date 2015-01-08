@@ -95,6 +95,7 @@ class MoersReader(CatalogReader):
     def import_data(self, d):
         d = import_package(d)
         d = metautils.gerToEngKeys(d)
+        d['originating_portal'] = portalname
         d['accepted'] = True
         d['costs'] = None
         d['open'] = metautils.isopen(d['licenseshort'])

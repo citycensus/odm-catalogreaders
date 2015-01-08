@@ -217,21 +217,28 @@ def importCity(cityname, url, package):
 class CkanReader(CatalogReader):
     city = None
     url = None
+    portalname = None
 
     def __init__(self, cityname):
         self.city = cityname
         if cityname == "koeln":
             self.url = "http://offenedaten-koeln.de"
+            self.portalname = "offenedaten-koeln.de"
         elif cityname == "bonn":
             self.url = "http://opendata.bonn.de"
+            self.portalname = "opendata.bonn.de"
         elif cityname == "hamburg":
             self.url = "http://suche.transparenz.hamburg.de"
+            self.portalname = "transparenz.hamburg.de"
         elif cityname == "frankfurt":
             self.url = "http://www.offenedaten.frankfurt.de"
+            self.portalname = "offenedaten.frankfurt.de"
         elif cityname == "aachen":
             self.url = "http://daten.aachen.de"
+            self.portalname = "daten.aachen.de"
         elif cityname == "berlin":
             self.url = "http://datenregister.berlin.de"
+            self.portalname = "datenregister.berlin.de"
         else:
             print 'First argument must be an city; unsupported city'
             exit()
@@ -255,6 +262,7 @@ class CkanReader(CatalogReader):
         if d != {}:
             d = metautils.gerToEngKeys(d)
             d = dict(d)
+            d['originating_portal'] = self.portalname
             d['accepted'] = True
             d['costs'] = None
             d['spatial'] = None
