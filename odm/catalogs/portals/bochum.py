@@ -170,7 +170,7 @@ def get_categorie_content(category_link):
             elif u'Kontakt' in key:
                 record['contact'] = rooturl + row.xpath('td[2]//a/@href')[0]
 
-    allrecords.append(record)
+        allrecords.append(record)
     return allrecords
 
 
