@@ -139,10 +139,15 @@ def importCity(cityname, url, package):
     row[u'Stadt'] = cityname
     row[u'Dateibezeichnung'] = package['title']
     row[u'URL PARENT'] = url + '/dataset/' + package['name']
-    if cityname in ('hamburg', 'koeln', 'frankfurt', 'aachen', 'berlin'):
+    if cityname in ('hamburg', 'koeln', 'frankfurt', 'aachen', 'berlin', 'muenchen'):
         if cityname in ('hamburg', 'frankfurt', 'aachen'):
             licensekey = 'license_id'
             vstellekey = 'author'
+            catskey = 'groups'
+            catssubkey = 'title'
+        elif cityname == 'muenchen':
+            licensekey = 'license_id'
+            vstellekey = 'maintainer'
             catskey = 'groups'
             catssubkey = 'title'
         elif cityname in ('koeln', 'berlin'):
@@ -239,6 +244,9 @@ class CkanReader(CatalogReader):
         elif cityname == "berlin":
             self.url = "http://datenregister.berlin.de"
             self.portalname = "datenregister.berlin.de"
+        elif cityname == "muenchen":
+            self.url = "http://www.opengov-muenchen.de"
+            self.portalname = "opengov-muenchen.de"
         else:
             print 'First argument must be an city; unsupported city'
             exit()
@@ -246,7 +254,7 @@ class CkanReader(CatalogReader):
     def info(self):
         return {
             'name': self.city + '_harvester',
-            'title': str(self.city),
+            'title': str(self.portalname),
             'description': ''
         }
 
