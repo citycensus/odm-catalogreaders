@@ -2,13 +2,11 @@
 import urllib
 import urllib2
 import json
-import os
 from BeautifulSoup import BeautifulSoup
 from odm.catalogs.utils import metautils
 from odm.catalogs.CatalogReader import CatalogReader
 
-# TODO: rework bonn
-
+#TODO: Update from datenerfassung (for Bonn)
 
 def berlin_to_odm(group):
     # One dataset about WLAN locations...
@@ -49,7 +47,7 @@ def berlin_to_odm(group):
         return []
 
 
-def gatherCity(cityname, url):
+def gatherCity(cityname, url, apikey):
     if cityname in ("hamburg", "koeln", "bonn"):
         if cityname == 'bonn':
             jsonurl = urllib.urlopen(url + "/data.json")
@@ -96,7 +94,6 @@ def gatherCity(cityname, url):
         if cityname == "berlin":
             # Berlin is special, it is CKAN 1.8 with V3 API in beta. We have to *post* with an empty dict. And we have to authenticate!
             request = urllib2.Request(url + '/api/3/action/current_package_list_with_resources')
-            apikey = os.environ['BERLINCKANAPIKEY']
             request.add_header('Authorization', apikey)
             jsonurl = urllib2.urlopen(request, "{}")
         else:
@@ -258,8 +255,8 @@ class CkanReader(CatalogReader):
             'description': ''
         }
 
-    def gather(self):
-        data = gatherCity(self.city, self.url)
+    def gather(self, apikey = None):
+        data = gatherCity(self.city, self.url, apikey)
         return data
 
     def fetch(self, d):
