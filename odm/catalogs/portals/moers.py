@@ -77,12 +77,16 @@ class MoersReader(CatalogReader):
         # The JSON file is very broken, and this is probably not the best way to fix it, but it might change tomorrow, so...
         jsonReq = urllib.urlopen(jsonurl)
         jtexts = jsonReq.read().split('\"name\"')
-        jtexts[len(jtexts) - 1] = jtexts[len(jtexts) - 1] + ' '
+        
         del jtexts[0]
         packages = []
         for text in jtexts:
-            jtext = ('[{\"name\"' + text[0:len(text)-7] + ']').replace('application\\', 'application/').replace('\r', '').replace('\n', '').replace('},"license_id"', ']},"license_id"').replace('"description": "Ressourcen: Folgende Felder können für jede Ressource individuell angegeben werden.","type": "array","items": {','"description": "Ressourcen: Folgende Felder können für jede Ressource individuell angegeben werden.","type": "array","items": [{') 
-            package = json.loads(jtext)
+            jtext = ('[{\"name\"' + text[0:len(text)-7] + ']').replace('application\\', 'application/').replace('\r', '').replace('\n', '').replace('},"license_id"', ']},"license_id"').replace('"description": "Ressourcen: Folgende Felder können für jede Ressource individuell angegeben werden.","type": "array","items": {','"description": "Ressourcen: Folgende Felder können für jede Ressource individuell angegeben werden.","type": "array","items": [{')
+            try:
+                package = json.loads(jtext)
+            except:
+                jtext = jtext[0:len(jtext)-1] + '}}]'
+                package = json.loads(jtext)
             packages.append(package[0])
         for p in packages:
             p['url'] = p['url']['description']

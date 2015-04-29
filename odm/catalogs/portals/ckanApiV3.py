@@ -267,6 +267,7 @@ class CkanReader(CatalogReader):
         if d != {}:
             d = metautils.gerToEngKeys(d)
             d = dict(d)
+            d['city'] = self.city
             d['originating_portal'] = self.portalname
             d['accepted'] = True
             d['costs'] = None

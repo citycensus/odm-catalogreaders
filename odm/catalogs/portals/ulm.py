@@ -216,10 +216,15 @@ def readXmlPart(part):
         #Keywords. Nightmare. At the end we will go through and see how many unique categories of categories there are...
         keywordsXML = details[ns1+'descriptiveKeywords']
 
-        record['keywords'] = []
+        record['keywords'] = dict()
+
         for keyworddata in keywordsXML:
-            for keyword in keyworddata[ns1+'MD_Keywords'][ns1+'keyword'][ns2+'CharacterString']:
-                record['keywords'].append(keyword.text)
+            keywordstring = ''
+            for keyword in keyworddata[ns1+'MD_Keywords'][ns1+'keyword']:
+                keywordstring += '\"' + keyword[ns2+'CharacterString'].text + '\",'
+            #Get rid of last commas
+            keywordstring = keywordstring[0:len(keywordstring)-1]
+            record['keywords'][keyworddata[ns1+'MD_Keywords'][ns1+'thesaurusName'][ns1+'CI_Citation'][ns1+'title'][ns2+'CharacterString'].text] = keywordstring
 
         #And just for extra merit, we have a topic category too for data entries
         record['topiccategory'] = ''
@@ -313,13 +318,9 @@ def imp_rec(record):
     row[u'Zeitlicher Bezug'] = record['datadate'][0:4]
 
     print record['keywords']
-    cs = []
-    for c in record['keywords']:
-        c = metautils.govDataLongToODM(c, True)
-        if c:
-            cs.append(c[0])
+    if ('GOV-Data Kategorien' in record['keywords'] and len(record['keywords']['GOV-Data Kategorien']) > 0):
+        row['categories'] = metautils.govDataLongToODM(record['keywords']['GOV-Data Kategorien'], checkAll=True)
 
-    row['categories'] = list(set(cs))
     print row['categories']
     return row
 
