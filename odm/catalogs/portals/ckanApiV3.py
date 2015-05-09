@@ -6,8 +6,6 @@ from BeautifulSoup import BeautifulSoup
 from odm.catalogs.utils import metautils
 from odm.catalogs.CatalogReader import CatalogReader
 
-#TODO: Update from datenerfassung (for Bonn)
-
 def berlin_to_odm(group):
     # One dataset about WLAN locations...
     if group == 'oeffentlich':
@@ -100,6 +98,9 @@ def gatherCity(cityname, url, apikey):
             jsonurl = urllib.urlopen(url + "/api/3/action/current_package_list_with_resources")
         groups = json.loads(jsonurl.read())
         groups = groups['result']
+        #Our CKAN doesn't like owner_org=null even though this occasionally happens. Its also confusing as we use owner_org for our own purposes later.
+        for group in groups:
+            group.pop('owner_org', None)
     return groups
 
 
