@@ -59,9 +59,9 @@ def get_categorie_content(category_link):
     parser = etree.HTMLParser(encoding='utf-8')
     data = etree.parse(rooturl + category_link, parser)
     # Get the category
-    category = data.xpath('//body//h1/text()')[2].strip()
+    category = data.xpath('/html/body/div/div[5]/div/div[1]//h1/text()')[0].strip()
     # category = urllib.unquote(category).decode('utf8')
-    if (verbose): print 'Category: ' + category
+    if (verbose): print 'Category: ' + ascii_only(category)
 
     datasets = get_datasets(data)
     numdatasets = len(datasets)
@@ -84,6 +84,7 @@ def get_categorie_content(category_link):
         if (verbose): print 'Found ' + str(len(datasetparts)) + ' datasets by splitting by links to TOC'
         if len(datasetparts) != numdatasets:
             if (verbose): print 'Well, that didn\'t work either. Giving up'
+            print 'Exciting because of a serious error - turn on verbose in the code to find out what dataset is causing the problem'
             exit()
     else:
         if numdatasets > 1:
@@ -103,7 +104,11 @@ def get_categorie_content(category_link):
         datasets = get_datasets(data)
         record['title'] = datasets[0]
 
-        if (verbose): print 'Parsing dataset ' + record['title']
+        if (verbose): print 'Parsing dataset ' + ascii_only(record['title'])
+        if 'noch im Aufbau' in record['title']:
+           # Nothing to see here
+           if (verbose): print 'Empty category'
+           continue
         record['url'] = rooturl + category_link + '#par' + str(count)
         count += 1
         datatables, filetables = findfilesanddata(data)
@@ -128,7 +133,14 @@ def get_categorie_content(category_link):
         record['formats'] = set()
         record['spatial'] = False
         for file in record['filelist']:
-            format = file.split('/')[-1].split('.')[1].upper()
+            formatarray = file.split('/')[-1].split('.')
+            format = 'Unknown'
+            if len(formatarray)>1:
+                format = formatarray[1].upper().split('?')[0]
+            elif 'WMS' in formatarray[0]:
+                format = 'WMS'
+            elif 'WFS' in formatarray[0]:
+                format = 'WFS'
             record['formats'].add(format)
             if (format.upper() in metautils.geoformats):
                 record['spatial'] = True
@@ -136,9 +148,11 @@ def get_categorie_content(category_link):
 
         if len(datatables) > 1:
             if (verbose): print 'ERROR: More than one data table'
+            print 'Exciting because of a serious error - turn on verbose in the code to find out what dataset is causing the problem'
             exit()
         elif len(datatables) == 0:
             if (verbose): print 'ERROR: No data table'
+            print 'Exciting because of a serious error - turn on verbose in the code to find out what dataset is causing the problem'
             exit()
 
         # parse the data table by row
@@ -147,15 +161,16 @@ def get_categorie_content(category_link):
         for row in rowelements:
             if len(row.xpath('td[1]/text()')) == 0: continue
             key = row.xpath('td[1]/text()')[0]
-            if (verbose): print key
+            if (verbose): print ascii_only(key)
             if len(row.xpath('td[2]/text()')) != 0:
                 val = row.xpath('td[2]/text()')[0]
             elif len(row.xpath('td[2]//a')) != 0:
                 val = row.xpath('td[2]//a/text()')[0]
             else:
                 if (verbose): print 'ERROR: Missing value'
+                print 'Exciting because of a serious error - turn on verbose in the code to find out what dataset is causing the problem'
                 exit()
-            if (verbose): print 'Parsing key ' + key.replace(':', '') + ' with value ' + val
+            if (verbose): print ascii_only('Parsing key ' + key.replace(':', '') + ' with value ' + val)
             if u'veröffentlicht' in key:
                 record['publisher'] = val
             elif u'geändert' in key:
@@ -181,10 +196,12 @@ def remove_multiples(allrecords):
         if record['title'] not in recordsdict:
             recordsdict[record['title']] = record
         else:
-            if (verbose): print record['title'] + ' in ' + str(record['categories']) + ' is already in ' + str(recordsdict[record['title']]['categories']) + '. Transferring category.'
+            if (verbose): print ascii_only(record['title']) + ' in ' + ascii_only(str(record['categories'])) + ' is already in ' + ascii_only(str(recordsdict[record['title']]['categories'])) + '. Transferring category.'
             recordsdict[record['title']]['categories'].extend(record['categories'])
     return recordsdict.values()
 
+def ascii_only(text):
+    return ''.join(i for i in text if ord(i)<128) + ' (ascii only)'
 
 class BochumReader(CatalogReader):
     def info(self):
@@ -216,7 +233,6 @@ class BochumReader(CatalogReader):
         record['costs'] = None
         record['metadata_xml'] = None
         record['accepted'] = True
-
         odm_cats = map(lambda x: metautils.govDataLongToODM(x, checkAll=True)[0], record['categories'])
         if len(odm_cats) > 0:
             record['categories'] = odm_cats
