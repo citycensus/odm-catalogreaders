@@ -109,6 +109,10 @@ def importCity(cityname, url, package):
         # Only take 'open data'
         if package['type'] != 'dataset' or 'forward-reference' in package['title']:
             return {}
+            
+    #There is a version of CKAN that can output private datasets!
+    if package['private']:
+        return {}
 
     resources = []
     formats = set()
