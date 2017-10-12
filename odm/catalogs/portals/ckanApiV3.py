@@ -44,18 +44,21 @@ def berlin_to_odm(group):
         print 'WARNING: Found no category or categories for ' + group
         return []
 
+offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
+
+v3cities = offenesdatenportal + ("hamburg", "koeln", "bonn")
 
 def gatherCity(cityname, url, apikey):
-    if cityname in ("hamburg", "koeln", "bonn", "moers"):
+    if cityname in v3cities:
         if cityname == 'bonn':
             jsonurl = urllib.urlopen(url + "/data.json")
-        elif cityname == 'moers':
+        elif cityname in offenesdatenportal:
             jsonurl = urllib.urlopen(url + "/api/action/organization_show?include_datasets=true&id=" + cityname)
         else:
             jsonurl = urllib.urlopen(url + "/api/3/action/package_list")
         listpackages = json.loads(jsonurl.read())
 
-        if cityname == 'moers':
+        if cityname in offenesdatenportal:
             listpackages = listpackages['result']['packages']
         elif cityname == 'bonn':
             listpackages = listpackages[1:]
@@ -68,7 +71,7 @@ def gatherCity(cityname, url, apikey):
         for item in listpackages:
             if cityname == 'bonn':
                 urltoread = url + "/api/3/action/package_show?id=" + item['identifier']
-            elif cityname == 'moers':
+            elif cityname in offenesdatenportal:
                 urltoread = url + "/api/action/package_show?id=" + item['name']
             else:
                 urltoread = url + "/api/3/action/package_show?id=" + item
@@ -258,6 +261,9 @@ class CkanReader(CatalogReader):
         elif cityname == "moers":
             self.url = "https://www.offenesdatenportal.de"
             self.portalname = "daten.moers.de"
+        elif cityname in offenesdatenportal:
+            self.url = "https://www.offenesdatenportal.de"
+            self.portalname = "https://www.offenesdatenportal.de/organization/" + cityname
         else:
             print 'First argument must be an city; unsupported city'
             exit()
