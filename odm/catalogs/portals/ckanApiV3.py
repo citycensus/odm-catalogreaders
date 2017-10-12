@@ -46,17 +46,21 @@ def berlin_to_odm(group):
 
 
 def gatherCity(cityname, url, apikey):
-    if cityname in ("hamburg", "koeln", "bonn"):
+    if cityname in ("hamburg", "koeln", "bonn", "moers"):
         if cityname == 'bonn':
             jsonurl = urllib.urlopen(url + "/data.json")
+        elif cityname == 'moers':
+            jsonurl = urllib.urlopen(url + "/api/action/organization_show?include_datasets=true&id=" + cityname)
         else:
             jsonurl = urllib.urlopen(url + "/api/3/action/package_list")
         listpackages = json.loads(jsonurl.read())
 
-        if cityname != 'bonn':
-            listpackages = listpackages['result']
+        if cityname == 'moers':
+            listpackages = listpackages['result']['packages']
         elif cityname == 'bonn':
             listpackages = listpackages[1:]
+        else:
+            listpackages = listpackages['result']
 
         groups = []
 
@@ -64,6 +68,8 @@ def gatherCity(cityname, url, apikey):
         for item in listpackages:
             if cityname == 'bonn':
                 urltoread = url + "/api/3/action/package_show?id=" + item['identifier']
+            elif cityname == 'moers':
+                urltoread = url + "/api/action/package_show?id=" + item['name']
             else:
                 urltoread = url + "/api/3/action/package_show?id=" + item
 
@@ -249,6 +255,9 @@ class CkanReader(CatalogReader):
         elif cityname == "muenchen":
             self.url = "http://www.opengov-muenchen.de"
             self.portalname = "opengov-muenchen.de"
+        elif cityname == "moers":
+            self.url = "https://www.offenesdatenportal.de"
+            self.portalname = "daten.moers.de"
         else:
             print 'First argument must be an city; unsupported city'
             exit()
