@@ -46,7 +46,7 @@ def berlin_to_odm(group):
 
 
 def gatherCity(cityname, url, apikey):
-    if cityname in ("hamburg", "koeln", "bonn"):
+    if cityname in ("hamburg", "koeln", "bonn", "muenchen", "aachen", "frankfurt", "rostock"):
         if cityname == 'bonn':
             jsonurl = urllib.urlopen(url + "/data.json")
         else:
@@ -249,6 +249,9 @@ class CkanReader(CatalogReader):
         elif cityname == "muenchen":
             self.url = "http://www.opengov-muenchen.de"
             self.portalname = "opengov-muenchen.de"
+        elif cityname == "rostock":
+            self.url = "http://opendata-hro.de"
+            self.portalname = "opendata-hro.de"
         else:
             print 'First argument must be an city; unsupported city'
             exit()
