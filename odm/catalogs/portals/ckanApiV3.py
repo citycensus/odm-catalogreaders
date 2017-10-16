@@ -141,8 +141,8 @@ def importCity(cityname, url, package):
     row[u'Stadt'] = cityname
     row[u'Dateibezeichnung'] = package['title']
     row[u'URL PARENT'] = url + '/dataset/' + package['name']
-    if cityname in ('hamburg', 'koeln', 'frankfurt', 'aachen', 'berlin', 'muenchen'):
-        if cityname in ('hamburg', 'frankfurt', 'aachen'):
+    if cityname in ('hamburg', 'koeln', 'frankfurt', 'aachen', 'berlin', 'muenchen', 'rostock'):
+        if cityname in ('hamburg', 'frankfurt', 'aachen', 'rostock'):
             licensekey = 'license_id'
             vstellekey = 'author'
             catskey = 'groups'
