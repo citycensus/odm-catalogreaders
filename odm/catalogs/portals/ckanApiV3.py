@@ -44,19 +44,26 @@ def berlin_to_odm(group):
         print 'WARNING: Found no category or categories for ' + group
         return []
 
+offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
+
+v3cities = offenesdatenportal + ("hamburg", "koeln", "bonn", "muenchen", "aachen", "frankfurt", "rostock")
 
 def gatherCity(cityname, url, apikey):
-    if cityname in ("hamburg", "koeln", "bonn"):
+    if cityname in v3cities:
         if cityname == 'bonn':
             jsonurl = urllib.urlopen(url + "/data.json")
+        elif cityname in offenesdatenportal:
+            jsonurl = urllib.urlopen(url + "/api/action/organization_show?include_datasets=true&id=" + cityname)
         else:
             jsonurl = urllib.urlopen(url + "/api/3/action/package_list")
         listpackages = json.loads(jsonurl.read())
 
-        if cityname != 'bonn':
-            listpackages = listpackages['result']
+        if cityname in offenesdatenportal:
+            listpackages = listpackages['result']['packages']
         elif cityname == 'bonn':
             listpackages = listpackages[1:]
+        else:
+            listpackages = listpackages['result']
 
         groups = []
 
@@ -64,6 +71,8 @@ def gatherCity(cityname, url, apikey):
         for item in listpackages:
             if cityname == 'bonn':
                 urltoread = url + "/api/3/action/package_show?id=" + item['identifier']
+            elif cityname in offenesdatenportal:
+                urltoread = url + "/api/action/package_show?id=" + item['name']
             else:
                 urltoread = url + "/api/3/action/package_show?id=" + item
 
@@ -141,8 +150,8 @@ def importCity(cityname, url, package):
     row[u'Stadt'] = cityname
     row[u'Dateibezeichnung'] = package['title']
     row[u'URL PARENT'] = url + '/dataset/' + package['name']
-    if cityname in ('hamburg', 'koeln', 'frankfurt', 'aachen', 'berlin', 'muenchen'):
-        if cityname in ('hamburg', 'frankfurt', 'aachen'):
+    if cityname in (offenesdatenportal + ('hamburg', 'koeln', 'frankfurt', 'aachen', 'berlin', 'muenchen', 'rostock')):
+        if cityname in (offenesdatenportal + ('hamburg', 'frankfurt', 'aachen', 'rostock')):
             licensekey = 'license_id'
             vstellekey = 'author'
             catskey = 'groups'
@@ -249,6 +258,12 @@ class CkanReader(CatalogReader):
         elif cityname == "muenchen":
             self.url = "http://www.opengov-muenchen.de"
             self.portalname = "opengov-muenchen.de"
+        elif cityname == "rostock":
+            self.url = "http://opendata-hro.de"
+            self.portalname = "opendata-hro.de"
+        elif cityname in offenesdatenportal:
+            self.url = "https://www.offenesdatenportal.de"
+            self.portalname = "www.offenesdatenportal.de/organization/" + cityname
         else:
             print 'First argument must be an city; unsupported city'
             exit()
