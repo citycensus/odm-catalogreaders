@@ -46,10 +46,13 @@ def berlin_to_odm(group):
 
 offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
 
-v3cities = offenesdatenportal + ("hamburg", "koeln", "bonn", "muenchen", "aachen", "frankfurt", "rostock")
+v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch")
+weiredCities = ("muenchen", "koeln")
+v3AndSlightlyWeiredCities = v3cities + weiredCities
+allCities = v3AndSlightlyWeiredCities + ("bonn",)
 
 def gatherCity(cityname, url, apikey):
-    if cityname in v3cities:
+    if cityname in allCities:
         if cityname == 'bonn':
             jsonurl = urllib.urlopen(url + "/data.json")
         elif cityname in offenesdatenportal:
@@ -150,8 +153,8 @@ def importCity(cityname, url, package):
     row[u'Stadt'] = cityname
     row[u'Dateibezeichnung'] = package['title']
     row[u'URL PARENT'] = url + '/dataset/' + package['name']
-    if cityname in (offenesdatenportal + ('hamburg', 'koeln', 'frankfurt', 'aachen', 'berlin', 'muenchen', 'rostock')):
-        if cityname in (offenesdatenportal + ('hamburg', 'frankfurt', 'aachen', 'rostock')):
+    if cityname in v3AndSlightlyWeiredCities + ("berlin"):
+        if cityname in v3cities:
             licensekey = 'license_id'
             vstellekey = 'author'
             catskey = 'groups'
@@ -264,6 +267,9 @@ class CkanReader(CatalogReader):
         elif cityname in offenesdatenportal:
             self.url = "https://www.offenesdatenportal.de"
             self.portalname = "www.offenesdatenportal.de/organization/" + cityname
+        elif cityname == "meerbusch":
+            self.url = "https://opendata.meerbusch.de"
+            self.portalname = "opendata.meerbusch.de"
         else:
             print 'First argument must be an city; unsupported city'
             exit()
