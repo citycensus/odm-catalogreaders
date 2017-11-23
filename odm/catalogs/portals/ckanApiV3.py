@@ -46,6 +46,8 @@ def berlin_to_odm(group):
 
 offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
 
+datenportalWithOrganisations = offenesdatenportal
+
 v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch")
 weiredCities = ("muenchen", "koeln")
 v3AndSlightlyWeiredCities = v3cities + weiredCities
@@ -53,18 +55,14 @@ allCities = v3AndSlightlyWeiredCities + ("bonn",)
 
 def gatherCity(cityname, url, apikey):
     if cityname in allCities:
-        if cityname == 'bonn':
-            jsonurl = urllib.urlopen(url + "/data.json")
-        elif cityname in offenesdatenportal:
+        if cityname in datenportalWithOrganisations:
             jsonurl = urllib.urlopen(url + "/api/action/organization_show?include_datasets=true&id=" + cityname)
         else:
             jsonurl = urllib.urlopen(url + "/api/3/action/package_list")
         listpackages = json.loads(jsonurl.read())
 
-        if cityname in offenesdatenportal:
+        if cityname in datenportalWithOrganisations:
             listpackages = listpackages['result']['packages']
-        elif cityname == 'bonn':
-            listpackages = listpackages[1:]
         else:
             listpackages = listpackages['result']
 
@@ -72,9 +70,7 @@ def gatherCity(cityname, url, apikey):
 
         print 'INFO: the names that follow have had special characters removed'
         for item in listpackages:
-            if cityname == 'bonn':
-                urltoread = url + "/api/3/action/package_show?id=" + item['identifier']
-            elif cityname in offenesdatenportal:
+            if cityname in datenportalWithOrganisations:
                 urltoread = url + "/api/action/package_show?id=" + item['name']
             else:
                 urltoread = url + "/api/3/action/package_show?id=" + item
@@ -153,7 +149,7 @@ def importCity(cityname, url, package):
     row[u'Stadt'] = cityname
     row[u'Dateibezeichnung'] = package['title']
     row[u'URL PARENT'] = url + '/dataset/' + package['name']
-    if cityname in v3AndSlightlyWeiredCities + ("berlin"):
+    if cityname in v3AndSlightlyWeiredCities + ("berlin",):
         if cityname in v3cities:
             licensekey = 'license_id'
             vstellekey = 'author'
