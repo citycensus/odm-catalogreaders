@@ -124,6 +124,10 @@ class TestCKANAPIV3(object):
         data = { "private": False, "resources": [], "title": "Meerbusch", "name": "meerbusch", "groups": "", "notes": "" }
         reader = CkanReader('meerbusch')
         d = reader.import_data(data)
-        print(d)
         assert d['city'] == 'meerbusch'
 
+    def test_bonn_import(self):
+        data = { "name": "name", "title": "title", "maintainer": "Offene Daten Bonn", "license_title": "cc-zero", "private": "Veroffentlicht", "resources": [ { "url": ""} ], "tags": [ { "name": "Bevolkerung" } ] }
+        reader = CkanReader('bonn')
+        d = reader.import_data(data)
+        assert d['publisher'] == 'Offene Daten Bonn'
