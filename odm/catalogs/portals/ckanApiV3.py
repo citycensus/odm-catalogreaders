@@ -141,7 +141,7 @@ def gatherCity(cityname, url, apikey):
                 trycount += 1
             pdata = json.loads(urldata)
             if 'success' in pdata and pdata['success']:
-                if cityname in ["koeln", "bonn"]:
+                if cityname in dkanCities:
                     groups.append(pdata['result'][0])
                 else:
                     groups.append(pdata['result'])
@@ -171,7 +171,7 @@ def importCity(cityname, url, package):
             return {}
 
     #There is a version of CKAN that can output private datasets! but DKAN is using this field for different purposes
-    if package['private'] and cityname not in ('bonn', 'koeln'):
+    if package['private'] and cityname not in dkanCities:
         return {}
 
     resources = []
@@ -211,10 +211,10 @@ def importCity(cityname, url, package):
         vstellekey = 'maintainer'
         catskey = 'groups'
         catssubkey = 'title'
-    elif cityname in ('koeln', 'berlin', 'bonn'):
+    elif cityname in ('berlin', ) + dkanCities:
         licensekey = 'license_title'
         vstellekey = 'maintainer'
-        if cityname in ('koeln', 'bonn'):
+        if cityname in dkanCities:
             catskey = 'tags'
         elif cityname == 'berlin':
             catskey = 'groups'
