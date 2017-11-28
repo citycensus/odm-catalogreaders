@@ -46,25 +46,23 @@ def berlin_to_odm(group):
 
 offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
 
+datenportalWithOrganisations = offenesdatenportal
+
 v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch")
-weiredCities = ("muenchen", "koeln")
+weiredCities = ("muenchen", "koeln", "bonn")
 v3AndSlightlyWeiredCities = v3cities + weiredCities
-allCities = v3AndSlightlyWeiredCities + ("bonn",)
+allCities = v3AndSlightlyWeiredCities
 
 def gatherCity(cityname, url, apikey):
     if cityname in allCities:
-        if cityname == 'bonn':
-            jsonurl = urllib.urlopen(url + "/data.json")
-        elif cityname in offenesdatenportal:
+        if cityname in datenportalWithOrganisations:
             jsonurl = urllib.urlopen(url + "/api/action/organization_show?include_datasets=true&id=" + cityname)
         else:
             jsonurl = urllib.urlopen(url + "/api/3/action/package_list")
         listpackages = json.loads(jsonurl.read())
 
-        if cityname in offenesdatenportal:
+        if cityname in datenportalWithOrganisations:
             listpackages = listpackages['result']['packages']
-        elif cityname == 'bonn':
-            listpackages = listpackages[1:]
         else:
             listpackages = listpackages['result']
 
@@ -72,9 +70,7 @@ def gatherCity(cityname, url, apikey):
 
         print 'INFO: the names that follow have had special characters removed'
         for item in listpackages:
-            if cityname == 'bonn':
-                urltoread = url + "/api/3/action/package_show?id=" + item['identifier']
-            elif cityname in offenesdatenportal:
+            if cityname in datenportalWithOrganisations:
                 urltoread = url + "/api/action/package_show?id=" + item['name']
             else:
                 urltoread = url + "/api/3/action/package_show?id=" + item
@@ -121,9 +117,9 @@ def importCity(cityname, url, package):
         # Only take 'open data'
         if package['type'] != 'dataset' or 'forward-reference' in package['title']:
             return {}
-            
-    #There is a version of CKAN that can output private datasets!
-    if package['private']:
+
+    #There is a version of CKAN that can output private datasets! but DKAN is using this field for different purposes
+    if package['private'] and cityname not in ('bonn', 'koeln'):
         return {}
 
     resources = []
@@ -153,78 +149,55 @@ def importCity(cityname, url, package):
     row[u'Stadt'] = cityname
     row[u'Dateibezeichnung'] = package['title']
     row[u'URL PARENT'] = url + '/dataset/' + package['name']
-    if cityname in v3AndSlightlyWeiredCities + ("berlin"):
-        if cityname in v3cities:
-            licensekey = 'license_id'
-            vstellekey = 'author'
+    if cityname in v3cities:
+        licensekey = 'license_id'
+        vstellekey = 'author'
+        catskey = 'groups'
+        catssubkey = 'title'
+    elif cityname == 'muenchen':
+        licensekey = 'license_id'
+        vstellekey = 'maintainer'
+        catskey = 'groups'
+        catssubkey = 'title'
+    elif cityname in ('koeln', 'berlin', 'bonn'):
+        licensekey = 'license_title'
+        vstellekey = 'maintainer'
+        if cityname in ('koeln', 'bonn'):
+            catskey = 'tags'
+        elif cityname == 'berlin':
             catskey = 'groups'
-            catssubkey = 'title'
-        elif cityname == 'muenchen':
-            licensekey = 'license_id'
-            vstellekey = 'maintainer'
-            catskey = 'groups'
-            catssubkey = 'title'
-        elif cityname in ('koeln', 'berlin'):
-            licensekey = 'license_title'
-            vstellekey = 'maintainer'
-            if cityname == 'koeln':
-                catskey = 'tags'
-            elif cityname == 'berlin':
-                catskey = 'groups'
-            catssubkey = 'name'
-        # Generate URL for the catalog page
-        if 'notes' in package and package['notes'] != None:
-            row[u'Beschreibung'] = package['notes']
-            if cityname == 'koeln':
-                soup = BeautifulSoup(row[u'Beschreibung'])
-                row[u'Beschreibung'] = soup.getText('\n')
+        catssubkey = 'name'
+    # Generate URL for the catalog page
+    if 'notes' in package and package['notes'] != None:
+        row[u'Beschreibung'] = package['notes']
+        if cityname == 'koeln':
+            soup = BeautifulSoup(row[u'Beschreibung'])
+            row[u'Beschreibung'] = soup.getText('\n')
+    else:
+        row[u'Beschreibung'] = ''
+    row[u'Zeitlicher Bezug'] = ''
+    if licensekey in package and package[licensekey] != None:
+        row[u'Lizenz'] = package[licensekey]
+        # if not already short, try to convert
+        if metautils.isopen(row[u'Lizenz']) is 'Unbekannt':
+            row[u'Lizenz'] = metautils.long_license_to_short(row[u'Lizenz'])
+    else:
+        row[u'Lizenz'] = 'nicht bekannt'
+    if vstellekey in package and package[vstellekey] != None:
+        row[u'Veröffentlichende Stelle'] = package[vstellekey]
+    else:
+        row[u'Veröffentlichende Stelle'] = ''
+        if 'extras' in package:
+            print 'WARNING: No author/maintainer/publisher, checking extras'
+            for extra in package['extras']:
+                if extra['key'] == 'contacts':
+                    print 'WARNING: No author, but amazingly there is possibly data in the contacts: ' + extra['value']
+    for group in metautils.setofvaluesasarray(package[catskey], catssubkey):
+        if cityname != 'berlin':
+            odm_cats = metautils.govDataLongToODM(group)
         else:
-            row[u'Beschreibung'] = ''
-        row[u'Zeitlicher Bezug'] = ''
-        if licensekey in package and package[licensekey] != None:
-            row[u'Lizenz'] = package[licensekey]
-            # if not already short, try to convert
-            if metautils.isopen(row[u'Lizenz']) is 'Unbekannt':
-                row[u'Lizenz'] = metautils.long_license_to_short(row[u'Lizenz'])
-        else:
-            row[u'Lizenz'] = 'nicht bekannt'
-        if vstellekey in package and package[vstellekey] != None:
-            row[u'Veröffentlichende Stelle'] = package[vstellekey]
-        else:
-            row[u'Veröffentlichende Stelle'] = ''
-            if 'extras' in package:
-                print 'WARNING: No author/maintainer/publisher, checking extras'
-                for extra in package['extras']:
-                    if extra['key'] == 'contacts':
-                        print 'WARNING: No author, but amazingly there is possibly data in the contacts: ' + extra['value']
-        for group in metautils.setofvaluesasarray(package[catskey], catssubkey):
-            if cityname != 'berlin':
-                odm_cats = metautils.govDataLongToODM(group)
-            else:
-                odm_cats = berlin_to_odm(group)
-            row[u'categories'] = odm_cats
-
-    # Bonn is just different enough to do it separately. TODO: Consider combining into above.
-    elif cityname == 'bonn':
-        row[u'Beschreibung'] = package.get('description', '')
-        for timeattempt in ['temporal', 'modified']:
-            if timeattempt in package and package[timeattempt] not in [None, '']:
-                row[u'Zeitlicher Bezug'] = package[timeattempt]
-                break
-        row[u'Zeitlicher Bezug'] = row.get(u'Zeitlicher Bezug', '')
-
-        row[u'Lizenz'] = package.get('license', False)
-        if not row[u'Lizenz']:
-            row[u'Lizenz'] = package['license_title']
-
-        row[u'Veröffentlichende Stelle'] = package.get('publisher', '')
-
-        cats = package.get('keyword', [])
-        odm_cats = map(lambda x: metautils.govDataLongToODM(x, checkAll=True), cats)
-        resources = package.get(u'distribution', [])
-        for r in resources:
-            files.append(r[u'accessURL'])
-            formats.append(r[u'format'])
+            odm_cats = berlin_to_odm(group)
+        row[u'categories'] = odm_cats
 
     row[u'Format'] = formats
     row[u'files'] = files
