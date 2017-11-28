@@ -120,6 +120,15 @@ class TestCKANAPIV3(object):
         reader.gather('1234')
         assert (httpretty.has_request())
 
+    @httpretty.activate
+    def test_gelsenkirchen(self):
+        httpretty.register_uri(httpretty.GET, "https://opendata.gelsenkirchen.de/api/3/action/package_list",
+            body='{"result": []}',
+            content_type="application/json")
+        reader = CkanReader('gelsenkirchen')
+        reader.gather()
+        assert (httpretty.has_request())
+
     def test_meerbusch_import(self):
         data = { "private": False, "resources": [], "title": "Meerbusch", "name": "meerbusch", "groups": "", "notes": "" }
         reader = CkanReader('meerbusch')

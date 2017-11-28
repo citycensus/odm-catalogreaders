@@ -6,6 +6,66 @@ from BeautifulSoup import BeautifulSoup
 from odm.catalogs.utils import metautils
 from odm.catalogs.CatalogReader import CatalogReader
 
+cities = {
+        "koeln": {
+            "url": "http://offenedaten-koeln.de",
+            "portalname": "offenedaten-koeln.de"
+        },
+        "hamburg": {
+            "url": "http://suche.transparenz.hamburg.de",
+            "portalname": "transparenz.hamburg.de"
+        },
+        "frankfurt": {
+            "url": "http://www.offenedaten.frankfurt.de",
+            "portalname": "offenedaten.frankfurt.de"
+        },
+        "aachen": {
+            "url": "http://daten.aachen.de",
+            "portalname": "daten.aachen.de"
+        },
+        "berlin": {
+            "url": "http://datenregister.berlin.de",
+            "portalname": "datenregister.berlin.de"
+        },
+        "muenchen": {
+            "url": "http://www.opengov-muenchen.de",
+            "portalname": "opengov-muenchen.de"
+        },
+        "rostock": {
+            "url": "http://opendata-hro.de",
+            "portalname": "opendata-hro.de"
+        },
+        "meerbusch": {
+            "url": "https://opendata.meerbusch.de",
+            "portalname": "opendata.meerbusch.de"
+        },
+        "gelsenkirchen": {
+            "url": "https://opendata.gelsenkirchen.de",
+            "portalname": "opendata.gelsenkirchen.de"
+        },
+        "bonn": {
+            "url": "http://opendata.bonn.de",
+            "portalname": "opendata.bonn.de"
+        }
+    }
+
+offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
+
+dkanCities = ("bonn", "koeln", "gelsenkirchen")
+
+datenportalWithOrganisations = offenesdatenportal
+
+v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch")
+weiredCities = dkanCities + ("muenchen", )
+v3AndSlightlyWeiredCities = v3cities + weiredCities
+allCities = v3AndSlightlyWeiredCities
+
+for city in offenesdatenportal:
+    cities[city] = {
+            "url": "https://www.offenesdatenportal.de",
+            "portalname": "www.offenesdatenportal.de/organization/" + city
+            }
+
 def berlin_to_odm(group):
     # One dataset about WLAN locations...
     if group == 'oeffentlich':
@@ -44,14 +104,6 @@ def berlin_to_odm(group):
         print 'WARNING: Found no category or categories for ' + group
         return []
 
-offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
-
-datenportalWithOrganisations = offenesdatenportal
-
-v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch")
-weiredCities = ("muenchen", "koeln", "bonn")
-v3AndSlightlyWeiredCities = v3cities + weiredCities
-allCities = v3AndSlightlyWeiredCities
 
 def gatherCity(cityname, url, apikey):
     if cityname in allCities:
@@ -213,36 +265,9 @@ class CkanReader(CatalogReader):
 
     def __init__(self, cityname):
         self.city = cityname
-        if cityname == "koeln":
-            self.url = "http://offenedaten-koeln.de"
-            self.portalname = "offenedaten-koeln.de"
-        elif cityname == "bonn":
-            self.url = "http://opendata.bonn.de"
-            self.portalname = "opendata.bonn.de"
-        elif cityname == "hamburg":
-            self.url = "http://suche.transparenz.hamburg.de"
-            self.portalname = "transparenz.hamburg.de"
-        elif cityname == "frankfurt":
-            self.url = "http://www.offenedaten.frankfurt.de"
-            self.portalname = "offenedaten.frankfurt.de"
-        elif cityname == "aachen":
-            self.url = "http://daten.aachen.de"
-            self.portalname = "daten.aachen.de"
-        elif cityname == "berlin":
-            self.url = "http://datenregister.berlin.de"
-            self.portalname = "datenregister.berlin.de"
-        elif cityname == "muenchen":
-            self.url = "http://www.opengov-muenchen.de"
-            self.portalname = "opengov-muenchen.de"
-        elif cityname == "rostock":
-            self.url = "http://opendata-hro.de"
-            self.portalname = "opendata-hro.de"
-        elif cityname in offenesdatenportal:
-            self.url = "https://www.offenesdatenportal.de"
-            self.portalname = "www.offenesdatenportal.de/organization/" + cityname
-        elif cityname == "meerbusch":
-            self.url = "https://opendata.meerbusch.de"
-            self.portalname = "opendata.meerbusch.de"
+        if cityname in cities:
+            self.url = cities[cityname]["url"]
+            self.portalname = cities[cityname]["portalname"]
         else:
             print 'First argument must be an city; unsupported city'
             exit()
