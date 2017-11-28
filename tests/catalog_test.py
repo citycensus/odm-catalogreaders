@@ -128,6 +128,12 @@ class TestCKANAPIV3(object):
         reader = CkanReader('gelsenkirchen')
         reader.gather()
         assert (httpretty.has_request())
+    def test_gelsenkirchen_import(self):
+        data = { "name": "name", "title": "title", "maintainer": "Offene Daten Gelsenkirchen", "license_title": "cc-zero", "private": "Veroffentlicht", "resources": [ { "url": ""} ], "tags": [ { "name": "Bevolkerung" } ] }
+        reader = CkanReader('gelsenkirchen')
+        d = reader.import_data(data)
+        assert d['publisher'] == 'Offene Daten Gelsenkirchen'
+
 
     def test_meerbusch_import(self):
         data = { "private": False, "resources": [], "title": "Meerbusch", "name": "meerbusch", "groups": "", "notes": "" }
@@ -140,3 +146,16 @@ class TestCKANAPIV3(object):
         reader = CkanReader('bonn')
         d = reader.import_data(data)
         assert d['publisher'] == 'Offene Daten Bonn'
+
+    def test_info(self):
+        reader = CkanReader('bonn')
+        info = { 'name': 'bonn_harvester',
+            'title': 'opendata.bonn.de',
+            'description': ''
+            }
+        assert reader.info() == info
+
+    def test_fetch(self):
+        reader = CkanReader('bonn')
+        assert reader.fetch('test') == 'test'
+
