@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import urllib
 import urllib2
+import requests
 import json
 from BeautifulSoup import BeautifulSoup
 from odm.catalogs.utils import metautils
@@ -8,7 +9,7 @@ from odm.catalogs.CatalogReader import CatalogReader
 
 cities = {
         "koeln": {
-            "url": "http://offenedaten-koeln.de",
+            "url": "https://offenedaten-koeln.de",
             "portalname": "offenedaten-koeln.de"
         },
         "hamburg": {
@@ -44,7 +45,7 @@ cities = {
             "portalname": "opendata.gelsenkirchen.de"
         },
         "bonn": {
-            "url": "http://opendata.bonn.de",
+            "url": "https://opendata.bonn.de",
             "portalname": "opendata.bonn.de"
         }
     }
@@ -108,10 +109,11 @@ def berlin_to_odm(group):
 def gatherCity(cityname, url, apikey):
     if cityname in allCities:
         if cityname in datenportalWithOrganisations:
-            jsonurl = urllib.urlopen(url + "/api/action/organization_show?include_datasets=true&id=" + cityname)
+            r = requests.get(url + "/api/action/organization_show?include_datasets=true&id=" + cityname)
         else:
-            jsonurl = urllib.urlopen(url + "/api/3/action/package_list")
-        listpackages = json.loads(jsonurl.read())
+            r = requests.get(url + "/api/3/action/package_list")
+        r.encoding = 'utf-8'
+        listpackages = json.loads(r.text)
 
         if cityname in datenportalWithOrganisations:
             listpackages = listpackages['result']['packages']
@@ -127,18 +129,9 @@ def gatherCity(cityname, url, apikey):
             else:
                 urltoread = url + "/api/3/action/package_show?id=" + item
 
-            print 'Downloading ' + metautils.findLcGermanCharsAndReplace(urltoread)
             trycount = 0
-            try:
-                req = urllib2.Request(urltoread.encode('utf8'))
-                resp = urllib2.urlopen(req)
-                urldata = resp.read()
-            except IOError:
-                if trycount == 100:
-                    print 'Download failed 100 times, giving up...'
-                    exit()
-                print 'Something went wrong, retrying...'
-                trycount += 1
+            r = requests.get(urltoread)
+            urldata = r.text
             pdata = json.loads(urldata)
             if 'success' in pdata and pdata['success']:
                 if cityname in dkanCities:
