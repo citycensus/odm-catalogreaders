@@ -48,6 +48,10 @@ cities = {
             "url": "https://opendata.duesseldorf.de",
             "portalname": "opendata.duesseldorf.de"
         },
+        "wuppertal": {
+            "url": "https://offenedaten-wuppertal.de",
+            "portalname": "offenedaten-wuppertal.de"
+        },
         "bonn": {
             "url": "https://opendata.bonn.de",
             "portalname": "opendata.bonn.de"
@@ -56,7 +60,7 @@ cities = {
 
 offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
 
-dkanCities = ("bonn", "koeln", "gelsenkirchen", "duesseldorf")
+dkanCities = ("bonn", "koeln", "gelsenkirchen", "duesseldorf", "wuppertal")
 
 datenportalWithOrganisations = offenesdatenportal
 
