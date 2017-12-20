@@ -44,6 +44,10 @@ cities = {
             "url": "https://opendata.gelsenkirchen.de",
             "portalname": "opendata.gelsenkirchen.de"
         },
+        "duesseldorf": {
+            "url": "https://opendata.duesseldorf.de",
+            "portalname": "opendata.duesseldorf.de"
+        },
         "bonn": {
             "url": "https://opendata.bonn.de",
             "portalname": "opendata.bonn.de"
@@ -52,7 +56,7 @@ cities = {
 
 offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
 
-dkanCities = ("bonn", "koeln", "gelsenkirchen")
+dkanCities = ("bonn", "koeln", "gelsenkirchen", "duesseldorf")
 
 datenportalWithOrganisations = offenesdatenportal
 
