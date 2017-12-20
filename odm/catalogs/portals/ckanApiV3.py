@@ -135,7 +135,9 @@ def gatherCity(cityname, url, apikey):
             pdata = json.loads(urldata)
             if 'success' in pdata and pdata['success']:
                 if cityname in dkanCities:
-                    groups.append(pdata['result'][0])
+                    # koeln has an empty dataset
+                    if len(pdata['result']) > 0:
+                        groups.append(pdata['result'][0])
                 else:
                     groups.append(pdata['result'])
             else:
