@@ -307,7 +307,7 @@ class CkanReader(CatalogReader):
             d['metadata_xml'] = None
             d['formats'] = list(d['formats'])
             d['open'] = metautils.isopen(d['licenseshort'].strip())
-            if 'categoies' not in d:
+            if 'categories' not in d:
                 d['categories'] = []
             d['filelist'] = d['files']
         return d
