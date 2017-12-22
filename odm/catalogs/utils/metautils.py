@@ -12,6 +12,23 @@ allfiletypes = tuple(allfiletypes)
 
 OPEN_LICENCES = ("cc-by", "odc-by", "cc-by 3.0", "dl-de-by-2.0", "dl-de/by-2-0", "cc-by-sa 3.0", "other-open", "cc0-1.0", "cc-zero", "dl-de-zero-2.0", "andere offene lizenzen", "cc by 3.0 de", "dl-de-by-1.0", "dl-de-by 1.0", "gfdl", "odbl", "cc-by-sa", "https://creativecommons.org/licenses/by/3.0/de/", "https://www.govdata.de/dl-de/by-2-0", "cc-by-3.0", "odc-odbl", "cc-by-4.0", "https://www.govdata.de/dl-de/zero-2-0")
 
+CATEGORIES = {
+        'Bildung und Wissenschaft': ['Bildung und Wissenschaft', 'Bildung', 'Wissenschaft'],
+        'Politik und Wahlen': ['Wahlen'],
+        u'Bevölkerung': [u'Bevölkerung'],
+        'Gesundheit': ['Gesundheit'],
+        'Transport und Verkehr': ['Transport und Verkehr', 'Verkehr', 'Transport'],
+        'Gesetze und Justiz': ['Gesetze und Justiz', 'Recht'],
+        'Wirtschaft und Arbeit': ['Wirtschaft und Arbeit'],
+        u'Öffentliche Verwaltung, Haushalt und Steuern': ['Verwaltung', 'Haushalt','Steuern'],
+        'Infrastruktur, Bauen und Wohnen': ['Infrastruktur', 'Bauen', 'Wohnen'],
+        'Geographie, Geologie und Geobasisdaten': ['Geo'],
+        'Soziales':['Soziales'],
+        'Kultur, Freizeit, Sport, Tourismus': ['Kultur', 'Freizeit', 'Sport', 'Tourismus'],
+        'Umwelt und Klima': ['Umwelt', 'Klima'],
+        'Verbraucherschutz': ['Verbraucherschutz'],
+        }
+
 def isopen(licensetext):
     if licensetext.lower() in OPEN_LICENCES:
         return 'Offen'
@@ -113,7 +130,6 @@ def govDataLongToODM(group, checkAll=False):
     # This is designed to cope either with a single category or a string with all categories. Quotes are allowed.
     # It has been extended to include the wild moers categories
     # Eventually, we need one function that matches all words, short and long to the govdata categories
-    group = group.strip()
     returnvalue = []
     if u'Bevölkerung' in group:
         returnvalue.append(u'Bevölkerung')
@@ -209,9 +225,22 @@ def long_license_to_short(licensetext):
     print 'Could not shorten ' + findLcGermanCharsAndReplace(licensetext.lower()) + ' (lower cased, dspec. chars removed). This may be OK if there is no sensible short form.'
     return licensetext
 
+def keyForMatched(key, values, match):
+    if any(v in match for v in values):
+        return key
+
+def matchCategory(category):
+    categories = filter(None,[keyForMatched(k,v,category) for k,v in CATEGORIES.iteritems()])
+    if len(categories) > 0:
+        return categories[0]
+
+def matchCategories(categories):
+    matchedCategories = [matchCategory(c) for c in categories]
+    return matchedCategories
 
 def setofvaluesasarray(arrayvalue, keyvalue):
     simplearray = []
     for item in arrayvalue:
         simplearray.append(item[keyvalue])
     return simplearray
+
