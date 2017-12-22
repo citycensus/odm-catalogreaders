@@ -251,12 +251,13 @@ def importCity(cityname, url, package):
             for extra in package['extras']:
                 if extra['key'] == 'contacts':
                     print 'WARNING: No author, but amazingly there is possibly data in the contacts: ' + extra['value']
-    for group in metautils.setofvaluesasarray(package[catskey], catssubkey):
-        if cityname != 'berlin':
-            odm_cats = metautils.govDataLongToODM(group)
-        else:
+    cat_groups = metautils.setofvaluesasarray(package[catskey], catssubkey)
+    if cityname != 'berlin':
+        odm_cats = metautils.matchCategories(cat_groups)
+    else:
+        for group in cat_groups:
             odm_cats = berlin_to_odm(group)
-        row[u'categories'] = odm_cats
+    row[u'categories'] = odm_cats
 
     row[u'Format'] = formats
     row[u'files'] = files

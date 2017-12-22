@@ -170,12 +170,12 @@ class TestCKANAPIV3(object):
             body='{"result": ["bürgeranträge-gem-§-24-go-nrw"]}',
             content_type="application/json")
         httpretty.register_uri(httpretty.GET, "https://opendata.bonn.de/api/3/action/package_show?id="+datasetId,
-            body='{"result": []}',
+                body='{"success": true, "result": [{}]}',
             content_type="application/json")
         reader = CkanReader('bonn')
         result = reader.gather()
         assert (httpretty.has_request())
-        assert len(result) == 0
+        assert len(result) == 1
 
 
     def test_bonn_special(self):
@@ -190,4 +190,11 @@ class TestCKANAPIV3(object):
         d = reader.import_data(ckan_result)
         print(d)
         assert d['open'] == 'Offen'
+
+    def test_is_open_import(self):
+        ckan_result = { "name": "test", "license_id": "dl-de-zero-2.0", "private": "", "title": "Test", "groups": [{'title': 'Wahlen'}] }
+        reader = CkanReader('moers')
+        d = reader.import_data(ckan_result)
+        print(d)
+        assert d['categories'] == ['Politik und Wahlen']
 
