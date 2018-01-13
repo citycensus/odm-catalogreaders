@@ -207,7 +207,12 @@ def importCity(cityname, url, package):
 
     row[u'Stadt'] = cityname
     row[u'Dateibezeichnung'] = package['title']
-    row[u'URL PARENT'] = url + '/dataset/' + package['name']
+    if 'name' in package:
+        row[u'URL PARENT'] = url + '/dataset/' + package['name']
+    elif 'url' in package:
+        row[u'URL PARENT'] = package['url']
+    else:
+        row[u'URL PARENT'] = ''
     if cityname in v3cities:
         licensekey = 'license_id'
         vstellekey = 'author'
