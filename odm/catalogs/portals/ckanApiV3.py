@@ -307,6 +307,12 @@ def importCity(cityname, url, package):
     row[u'files'] = files
 
     row['metadata'] = package
+
+    row[u'original_metadata'] = {
+            u'metadata_created': package['metadata_created'],
+            u'metadata_modified': package['metadata_modified']
+            }
+
     return row
 
 

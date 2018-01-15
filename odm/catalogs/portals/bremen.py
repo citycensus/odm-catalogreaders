@@ -37,6 +37,14 @@ def import_package(package):
     if ('terms_of_use' in package['extras'] and len(package['extras']['terms_of_use']) > 0):
         row[u'Lizenz'] = package['extras']['terms_of_use']['licence_id']
 
+    if ('dates' in package['extras'] and len(package['extras']['dates']) > 0):
+        row[u'original_metadata'] = {}
+        for dates in package['extras']['dates']:
+            if dates['role'] == 'erstellt':
+                row[u'original_metadata'][u'metadata_created'] = dates['date']
+            if dates['role'] == 'aktualisiert':
+                row[u'original_metadata'][u'metadata_modified'] = dates['date']
+
     row['categories'] = map(lambda x: metautils.govDataShortToODM(x)[0], package.get('groups', []))
     return row
 

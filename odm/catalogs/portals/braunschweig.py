@@ -270,7 +270,10 @@ def extractData(rec):
     d['xml'] = etree.tostring(rec, pretty_print=True, encoding='utf8')
     d['url'] = 'http://geoportal.braunschweig.de/terraCatalog/Query/' \
                'ShowCSWInfo.do;?fileIdentifier=' + d['identifier']
-
+    d['original_metadata'] = {
+            'metadata_created': d['created'],
+            'metadata_modified': d['modified']
+            }
     return d
 
 
