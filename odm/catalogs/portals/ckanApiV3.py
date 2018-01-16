@@ -69,27 +69,27 @@ cities = {
 dkan_uuid = {
         "kerpen": "1fa89497-b1cd-4285-9b40-b5e8633eaa94",
         "bergheim": "c1679a1b-79bf-400f-8d8a-0cce2159846d",
-        "brühl": "bd4db65f-7e88-42be-a64f-57fb3f2572a5",
+        "bruehl": "bd4db65f-7e88-42be-a64f-57fb3f2572a5",
         "kall": "35fd9533-46f1-4c2a-a693-aea284c91fea",
         "elsdorf": "d9671f9a-66bc-4e30-b31f-31c754d6a156",
         "kreis-euskirchen": "e3249a69-3d2c-4820-9dcd-eb99b1bda0a0",
         "merzenich": "5f0bcd2a-b168-4246-9f2d-cd9f6aebafb3",
-        "jülich": "2b036b3b-78f3-421d-a41b-28bd7e8ef23f",
-        "hürtgenwald": "5ea20e3b-1a82-4ba4-972d-8c4b6edac6f2",
+        "juelich": "2b036b3b-78f3-421d-a41b-28bd7e8ef23f",
+        "huertgenwald": "5ea20e3b-1a82-4ba4-972d-8c4b6edac6f2",
         "langerwehe": "c8dfbe8d-e4be-42b4-ab0b-bb5fa4dc852d",
         "wesseling": "60a6b396-b6c3-4249-9d4a-be5d3a7db974",
-        "vettweiß": "9d49d1bc-c848-4f3d-b2d8-4ca512a2bdbd",
+        "vettweiss": "9d49d1bc-c848-4f3d-b2d8-4ca512a2bdbd",
         "heimbach": "f912b0c0-e177-4941-a16f-85fd47352fe6",
         "kreuzau": "ccd1e8f1-2377-415d-ad53-18020836f837",
         "linnich": "20395c82-822c-4b7a-99ea-979c30c150a0",
-        "bad-münstereifel": "bd8907bf-5320-415c-8d88-6c4b7bf1e264",
+        "bad-muenstereifel": "bd8907bf-5320-415c-8d88-6c4b7bf1e264",
         "titz": "dde71ddf-4268-4e24-9137-a9d0bb1a7119",
         "bedburg": "52043d9c-5bfa-4c91-be58-522d96813ca2",
-        "nörvenich": "9e733787-ee58-4df5-bc9f-09bdafd90702",
+        "noervenich": "9e733787-ee58-4df5-bc9f-09bdafd90702",
         "niederzier": "ad9e9bfd-33be-4213-b846-ec28a33ffb3b"
         }
 
-kdvz = ("kerpen", "bergheim", "brühl", "kall", "elsdorf", "kreis-euskirchen", "merzenich", "jülich", "hürtgenwald", "langerwehe", "wesseling", "vettweiß", "heimbach", "kreuzau", "linnich", "bad-münstereifel", "titz", "bedburg", "nörvenich", "niederzier")
+kdvz = ("kerpen", "bergheim", "bruehl", "kall", "elsdorf", "kreis-euskirchen", "merzenich", "juelich", "huertgenwald", "langerwehe", "wesseling", "vettweiss", "heimbach", "kreuzau", "linnich", "bad-muenstereifel", "titz", "bedburg", "noervenich", "niederzier")
 offenesdatenportal = ("moers", "krefeld", "stadt-bottrop", "stadt-geldern", "stadt-kleve", "stadt-wesel", "kreis-wesel", "kreis-viersen", "kreis-kleve", "gemeinde-wachtendonk")
 
 dkanCities = ("bonn", "koeln", "gelsenkirchen", "duesseldorf", "wuppertal", "muelheim-ruhr") + kdvz
