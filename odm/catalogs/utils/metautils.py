@@ -244,3 +244,18 @@ def setofvaluesasarray(arrayvalue, keyvalue):
         simplearray.append(item[keyvalue])
     return simplearray
 
+def get_links(link):
+    return {}
+
+def get_from_links(entry, key):
+    links = {}
+    for link in entry["links"]:
+        links[link["rel"]] = link["href"]
+    return links[key]
+
+def next_entry(entry):
+    return get_from_links(entry, "next")
+
+def dataset_exports(entry):
+    return get_from_links(entry, "exports")
+

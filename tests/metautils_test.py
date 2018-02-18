@@ -23,3 +23,9 @@ class TestMetaUtils(object):
         categories = (u'Bildung und Wissenschaft', 'Wahlen')
         assert metautils.matchCategories(categories) == ['Bildung und Wissenschaft', 'Politik und Wahlen']
 
+
+    def test_links(self):
+        entry = { "links": [
+            { "rel": "next", "href": "http://test.de"}
+            ]}
+        assert metautils.next_entry(entry) == "http://test.de"
