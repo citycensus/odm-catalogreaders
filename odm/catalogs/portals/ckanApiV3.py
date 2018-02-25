@@ -56,6 +56,14 @@ cities = {
             "url": "https://geo.muelheim-ruhr.de",
             "portalname": "geo.muelheim-ruhr.de"
         },
+        "jena": {
+            "url": "https://opendata.jena.de",
+            "portalname": "opendata.jena.de"
+        },
+        "karlsruhe": {
+            "url": "https://transparenz.karlsruhe.de",
+            "portalname": "transparenz.karlsruhe.de"
+        },
         "leipzig": {
             "url": "https://opendata.leipzig.de",
             "portalname": "opendata.leipzig.de"
@@ -96,7 +104,7 @@ dkanCities = ("bonn", "koeln", "gelsenkirchen", "duesseldorf", "wuppertal", "mue
 
 datenportalWithOrganisations = offenesdatenportal
 
-v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch", "leipzig")
+v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch", "leipzig", "jena", "karlsruhe")
 weiredCities = dkanCities + ("muenchen", )
 v3AndSlightlyWeiredCities = v3cities + weiredCities
 allCities = v3AndSlightlyWeiredCities
