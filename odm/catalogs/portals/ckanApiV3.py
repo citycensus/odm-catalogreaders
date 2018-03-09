@@ -104,7 +104,7 @@ dkanCities = ("bonn", "koeln", "gelsenkirchen", "duesseldorf", "wuppertal", "mue
 
 datenportalWithOrganisations = offenesdatenportal
 
-v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch", "leipzig", "jena", "karlsruhe")
+v3cities = offenesdatenportal + ("hamburg", "aachen", "frankfurt", "rostock", "meerbusch", "leipzig", "jena", "karlsruhe", "berlin")
 weiredCities = dkanCities + ("muenchen", )
 v3AndSlightlyWeiredCities = v3cities + weiredCities
 allCities = v3AndSlightlyWeiredCities
@@ -167,6 +167,9 @@ def gatherCity(cityname, url, apikey):
             r = requests.get(url + "/api/action/organization_show?include_datasets=true&id=" + cityname)
         elif cityname in kdvz:
             r = requests.get(url + "/api/3/action/group_package_show?id=" + dkan_uuid[cityname])
+        elif cityname == "berlin":
+            headers = {'Authorization': apikey}
+            r = requests.get(url + "/api/3/action/package_list", headers=headers)
         else:
             r = requests.get(url + "/api/3/action/package_list")
         r.encoding = 'utf-8'
@@ -187,11 +190,20 @@ def gatherCity(cityname, url, apikey):
                 urltoread = url + "/api/3/action/package_show?id=" + item['id']
             else:
                 urltoread = url + "/api/3/action/package_show?id=" + item
+                print(item)
 
             trycount = 0
-            r = requests.get(urltoread)
-            urldata = r.text
-            pdata = json.loads(urldata)
+            if cityname == "berlin":
+                headers = {'Authorization': apikey}
+                r = requests.get(urltoread, headers=headers)
+            else:
+                r = requests.get(urltoread)
+            pdata = {}
+            try:
+                urldata = r.text
+                pdata = json.loads(urldata)
+            except (RuntimeError, TypeError, NameError, ValueError):
+                print('error for url {}'.format(urltoread))
             if 'success' in pdata and pdata['success']:
                 if cityname in dkanCities:
                     # koeln has an empty dataset
@@ -265,18 +277,17 @@ def importCity(cityname, url, package):
         vstellekey = 'author'
         catskey = 'groups'
         catssubkey = 'title'
+        if cityname == 'berlin':
+            catssubkey = 'name'
     elif cityname == 'muenchen':
         licensekey = 'license_id'
         vstellekey = 'maintainer'
         catskey = 'groups'
         catssubkey = 'title'
-    elif cityname in ('berlin', ) + dkanCities:
+    elif cityname in dkanCities:
         licensekey = 'license_title'
         vstellekey = 'maintainer'
-        if cityname in dkanCities:
-            catskey = 'tags'
-        elif cityname == 'berlin':
-            catskey = 'groups'
+        catskey = 'tags'
         catssubkey = 'name'
     # Generate URL for the catalog page
     if 'notes' in package and package['notes'] != None:
